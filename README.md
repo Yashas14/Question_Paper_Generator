@@ -47,6 +47,7 @@ Efficiently generates high-quality, diverse question papers, significantly reduc
 - **Documentation**: Comprehensive instructions and guidelines for use.
 - **Sample Papers**: Examples of generated question papers to illustrate functionality.
 
-👥 **Connect With Us**
-Yashas D on [LinkedIn](https://www.linkedin.com/in/yashasd2004/). Reach out for questions or collaboration opportunities!
+👥 **Connect With Me:**
+Yashas D on [LinkedIn](https://www.linkedin.com/in/yashasd2004/).
+Reach out for questions or collaboration opportunities!
 
