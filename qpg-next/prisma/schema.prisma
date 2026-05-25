@@ -1,0 +1,372 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model User {
+  id             String    @id @default(cuid())
+  name           String?
+  email          String    @unique
+  emailVerified  DateTime?
+  image          String?
+  password       String?
+  role           String    @default("TEACHER")
+  institutionId  String?
+  isVerified     Boolean   @default(false)
+  settings       String?   @default("{}")
+  lastLogin      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  institution       Institution?     @relation(fields: [institutionId], references: [id])
+  accounts          Account[]
+  sessions          Session[]
+  subjects          Subject[]        @relation("SubjectCreator")
+  questions         Question[]       @relation("QuestionCreator")
+  papers            QuestionPaper[]  @relation("PaperCreator")
+  sharedPapers      PaperShare[]     @relation("SharedBy")
+  receivedShares    PaperShare[]     @relation("SharedWith")
+  aiLogs            AIGenerationLog[]
+  analyticsEvents   AnalyticsEvent[]
+  reviewComments    ReviewComment[]
+  notifications     Notification[]
+  apiKeys           ApiKey[]
+
+  @@index([institutionId])
+  @@index([email])
+  @@index([role])
+}
+
+model Institution {
+  id                 String   @id @default(cuid())
+  name               String
+  logoUrl            String?
+  domain             String?  @unique
+  type               String?
+  subscriptionPlan   String   @default("FREE")
+  maxUsers           Int      @default(10)
+  maxPapersPerMonth  Int      @default(3)
+  maxQuestions       Int      @default(100)
+  maxAIGenerations   Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  users              User[]
+  subjects           Subject[]
+  papers             QuestionPaper[]
+  departments        Department[]
+
+  @@index([domain])
+}
+
+model Department {
+  id             String      @id @default(cuid())
+  name           String
+  code           String?
+  institutionId  String
+
+  institution    Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  subjects       Subject[]
+
+  @@unique([name, institutionId])
+  @@index([institutionId])
+}
+
+model Subject {
+  id             String    @id @default(cuid())
+  name           String
+  code           String
+  semester       Int?
+  departmentId   String?
+  institutionId  String
+  syllabusUrl    String?
+  createdById    String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  department     Department?  @relation(fields: [departmentId], references: [id])
+  institution    Institution  @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  createdBy      User         @relation("SubjectCreator", fields: [createdById], references: [id])
+  topics         Topic[]
+  questions      Question[]
+  papers         QuestionPaper[]
+  aiLogs         AIGenerationLog[]
+
+  @@unique([code, institutionId])
+  @@index([institutionId])
+  @@index([departmentId])
+}
+
+model Topic {
+  id               String   @id @default(cuid())
+  name             String
+  description      String?
+  subjectId        String
+  bloomLevel       String?
+  weightage        Float?   @default(0)
+  orderIndex       Int      @default(0)
+
+  subject          Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  questions        Question[]
+
+  @@unique([name, subjectId])
+  @@index([subjectId])
+}
+
+model Question {
+  id                 String   @id @default(cuid())
+  text               String
+  type               String
+  difficulty         String   @default("MEDIUM")
+  marks              Float    @default(1)
+  timeEstimateMin    Int?     @default(5)
+  subjectId          String
+  topicId            String?
+  bloomLevel         String?
+  createdById        String
+  isAIGenerated      Boolean  @default(false)
+  isVerified         Boolean  @default(false)
+  options            String?
+  correctAnswer      String?
+  explanation        String?
+  tags               String?  @default("[]")
+  imageUrl           String?
+  usageCount         Int      @default(0)
+  lastUsedAt         DateTime?
+  embedding          String?  @default("[]")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  subject            Subject          @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  topic              Topic?           @relation(fields: [topicId], references: [id])
+  createdBy          User             @relation("QuestionCreator", fields: [createdById], references: [id])
+  paperQuestions     PaperQuestion[]
+
+  @@index([subjectId])
+  @@index([topicId])
+  @@index([type])
+  @@index([difficulty])
+  @@index([bloomLevel])
+  @@index([createdById])
+  @@index([isAIGenerated])
+}
+
+model QuestionPaper {
+  id               String    @id @default(cuid())
+  title            String
+  subjectId        String
+  createdById      String
+  institutionId    String
+  examType         String    @default("CIE")
+  totalMarks       Float?
+  durationMinutes  Int?
+  instructions     String?
+  headerConfig     String?   @default("{}")
+  status           String    @default("DRAFT")
+  version          Int       @default(1)
+  parentPaperId    String?
+  isShuffled       Boolean   @default(false)
+  shuffleOptions   Boolean   @default(false)
+  shuffleQuestions Boolean   @default(false)
+  templateId       String?   @default("university-classic")
+  pdfUrl           String?
+  answerKeyUrl     String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  publishedAt      DateTime?
+
+  subject          Subject        @relation(fields: [subjectId], references: [id])
+  createdBy        User           @relation("PaperCreator", fields: [createdById], references: [id])
+  institution      Institution    @relation(fields: [institutionId], references: [id])
+  parentPaper      QuestionPaper? @relation("PaperVersions", fields: [parentPaperId], references: [id])
+  childVersions    QuestionPaper[] @relation("PaperVersions")
+  sections         PaperSection[]
+  paperQuestions   PaperQuestion[]
+  shares           PaperShare[]
+  analyticsEvents  AnalyticsEvent[]
+  reviewComments   ReviewComment[]
+
+  @@index([subjectId])
+  @@index([createdById])
+  @@index([institutionId])
+  @@index([status])
+}
+
+model PaperSection {
+  id                      String          @id @default(cuid())
+  paperId                 String
+  title                   String
+  description             String?
+  marksPerQuestion        Float?
+  totalQuestionsToAttempt Int?
+  orderIndex              Int             @default(0)
+
+  paper                   QuestionPaper   @relation(fields: [paperId], references: [id], onDelete: Cascade)
+  paperQuestions          PaperQuestion[]
+
+  @@index([paperId])
+}
+
+model PaperQuestion {
+  id              String        @id @default(cuid())
+  paperId         String
+  sectionId       String?
+  questionId      String
+  orderIndex      Int           @default(0)
+  marksOverride   Float?
+  isCompulsory    Boolean       @default(true)
+
+  paper           QuestionPaper @relation(fields: [paperId], references: [id], onDelete: Cascade)
+  section         PaperSection? @relation(fields: [sectionId], references: [id])
+  question        Question      @relation(fields: [questionId], references: [id])
+
+  @@unique([paperId, questionId])
+  @@index([paperId])
+  @@index([sectionId])
+  @@index([questionId])
+}
+
+model PaperShare {
+  id              String    @id @default(cuid())
+  paperId         String
+  sharedById      String
+  sharedWithId    String?
+  sharedWithEmail String?
+  permission      String    @default("VIEW")
+  token           String?   @unique @default(cuid())
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+
+  paper           QuestionPaper   @relation(fields: [paperId], references: [id], onDelete: Cascade)
+  sharedBy        User            @relation("SharedBy", fields: [sharedById], references: [id])
+  sharedWith      User?           @relation("SharedWith", fields: [sharedWithId], references: [id])
+
+  @@index([paperId])
+  @@index([sharedById])
+  @@index([token])
+}
+
+model ReviewComment {
+  id         String        @id @default(cuid())
+  paperId    String
+  userId     String
+  questionId String?
+  text       String
+  resolved   Boolean       @default(false)
+  createdAt  DateTime      @default(now())
+
+  paper      QuestionPaper @relation(fields: [paperId], references: [id], onDelete: Cascade)
+  user       User          @relation(fields: [userId], references: [id])
+
+  @@index([paperId])
+}
+
+model AIGenerationLog {
+  id                 String   @id @default(cuid())
+  userId             String
+  subjectId          String?
+  promptUsed         String
+  questionsGenerated Int      @default(0)
+  tokensUsed         Int      @default(0)
+  costUsd            Float    @default(0)
+  model              String   @default("gpt-4o")
+  createdAt          DateTime @default(now())
+
+  user               User     @relation(fields: [userId], references: [id])
+  subject            Subject? @relation(fields: [subjectId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model AnalyticsEvent {
+  id         String         @id @default(cuid())
+  userId     String?
+  paperId    String?
+  eventType  String
+  metadata   String?        @default("{}")
+  createdAt  DateTime       @default(now())
+
+  user       User?          @relation(fields: [userId], references: [id])
+  paper      QuestionPaper? @relation(fields: [paperId], references: [id])
+
+  @@index([eventType])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  link      String?
+  isRead    Boolean  @default(false)
+  type      String   @default("info")
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+}
+
+model ApiKey {
+  id             String    @id @default(cuid())
+  userId         String
+  name           String
+  key            String    @unique
+  lastUsedAt     DateTime?
+  expiresAt      DateTime?
+  rateLimit      Int       @default(100)
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([key])
+  @@index([userId])
+}

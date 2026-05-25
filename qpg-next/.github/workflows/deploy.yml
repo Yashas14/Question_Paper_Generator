@@ -1,0 +1,155 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  # ─── Lint & Type Check ────────────────────────────
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: qpg-next/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: qpg-next
+        run: npm ci
+      
+      - name: Generate Prisma client
+        working-directory: qpg-next
+        run: npx prisma generate
+      
+      - name: Lint
+        working-directory: qpg-next
+        run: npm run lint
+      
+      - name: Type Check
+        working-directory: qpg-next
+        run: npm run typecheck
+
+  # ─── Unit & Integration Tests ─────────────────────
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: quality
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: qpg_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+    
+    env:
+      DATABASE_URL: postgresql://test:test@localhost:5432/qpg_test?schema=public
+      REDIS_URL: redis://localhost:6379
+      NEXTAUTH_SECRET: test-secret
+      NEXTAUTH_URL: http://localhost:3000
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: qpg-next/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: qpg-next
+        run: npm ci
+      
+      - name: Generate Prisma client
+        working-directory: qpg-next
+        run: npx prisma generate
+      
+      - name: Run database migrations
+        working-directory: qpg-next
+        run: npx prisma migrate deploy
+      
+      - name: Run unit tests
+        working-directory: qpg-next
+        run: npm test -- --run
+
+  # ─── E2E Tests ────────────────────────────────────
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: qpg-next/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: qpg-next
+        run: npm ci
+      
+      - name: Install Playwright browsers
+        working-directory: qpg-next
+        run: npx playwright install --with-deps
+      
+      - name: Run E2E tests
+        working-directory: qpg-next
+        run: npm run test:e2e
+
+  # ─── Deploy to Vercel ─────────────────────────────
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          working-directory: qpg-next
+      
+      - name: Notify Slack
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: |
+            Deploy ${{ job.status == 'success' && 'succeeded ✅' || 'failed ❌' }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.event.head_commit.message }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}

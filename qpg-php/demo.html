@@ -1,0 +1,72 @@
+<html>
+<style>
+.invoice {
+    margin-top: 2em;
+  }
+  
+  span {
+    color: blue;
+    border: 1px solid black;
+  }
+  
+  .extra span {
+    color: inherit;
+  }
+  
+  @media print {
+      body{
+          width: 21cm;
+          height: 29.7cm;
+          margin: 20mm; /* Adjust margin as you like. */        
+     } 
+     
+     * {background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important; -ms-filter: none !important} /* Black prints faster */
+     
+     pre, blockquote {border: 1px solid #999; page-break-inside: avoid; }
+  
+  
+  thead {display: table-header-group; } /* Repeat header row at top of each printed page */
+    tr, img {page-break-inside: avoid; }
+    
+    img {max-width: 100% !important; }
+    
+    @page {margin: 0.5cm}
+    
+    p, h2, h3 {orphans: 3; widows: 3}
+    
+    h2, h3{page-break-after: avoid}
+  }
+  </style>
+s
+
+  <head>
+  
+  </head>
+  
+  <body>
+  
+  <div class="invoice">
+    Here is <span>First invoice table formatV	Internal Assessment Test I-April 2023
+        USN											                Branch:	EC	 
+        Subject:	Data Structure using C++	Sub Code:	18EC643	
+        Date:	25-04-2023	Duration:	90 Min’s	Sem/Sec:	VI Sem-A/B/C/D	
+    S.N	Note : Answer any Five Full Questions	Marks	CO	RBT
+    1a	Write a C++ program that inputs 2 numbers and outputs largest number using class. 	5	CO1	L1
+    1b	Define an Array. Write C++ program to store elements ad retrieve elements from array	5	CO1	L2
+    2a	Write C++ program to display Fibonacci series using function.	5	CO1	L2
+    2b	Define function. Bring out the difference between function prototype and function definition.	5	CO1	L2
+    3	What is sparse matrix? Explain in detail different ways in which sparse matrix is represented.	10	CO1	L1
+    4	Define Linked list. Explain the linked list representation. Write a pseudo code for node representation.	10	CO1	L2
+    5a	Write a note on iterator.	4	CO1	L1
+    5b	Briefly explain Recursion. Write recursive function in C++ to find factorial of a
+    number	6	CO1	L2
+    6	Explain the concept of converting 2D array into 1D array using row map and column map concepts. 	10	CO1	L2
+    </span>
+  </div>
+  
+  <div class="invoice extra" style="color:green">
+    Here is <span>Second invoice table format</span>.
+  </div>
+  
+  </body>
+  </html>
