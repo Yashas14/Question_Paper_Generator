@@ -1,121 +1,153 @@
-# Question Paper Generator (QPG)
+<div align="center">
 
-An end-to-end platform for creating professional exam question papers — from a legacy PHP system to a full-stack AI-powered SaaS application.
+# 📝 Question Paper Generator
+
+### AI-powered exam paper creation platform — from legacy PHP to modern SaaS
+
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o-412991?logo=openai&logoColor=white)](https://openai.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![PHP](https://img.shields.io/badge/PHP-7.4+-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![Tests](https://img.shields.io/badge/Tests-149%20passing-22c55e?logo=vitest&logoColor=white)](#-running-tests)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+<br/>
+
+**[Quick Start](#-quick-start) · [Demo Credentials](#-demo-credentials) · [API Reference](#-api-reference) · [Architecture](#-architecture)**
+
+</div>
+
+---
+
+## 📖 About
+
+The **Question Paper Generator** automates the creation of professional, syllabus-aligned exam papers. This repository showcases **two complete implementations** demonstrating the full evolution of the project — from a functional PHP prototype to a production-ready AI SaaS platform.
 
 This repository contains **two complete implementations** that demonstrate the evolution of the project:
 
-| Version | Stack | Location |
-|---------|-------|----------|
-| **v1 — Legacy** | PHP + MySQL + FPDF | `/qpg-php` |
-| **v2 — Modern (QPG Next)** | Next.js 14 + AI + Prisma + PostgreSQL | `/qpg-next` |
+| | Version | Stack | Location |
+|--|---------|-------|----------|
+| 🔴 | **v1 — Legacy** | PHP · MySQL · FPDF · Bootstrap | [`/qpg-php`](./qpg-php) |
+| 🟢 | **v2 — Modern SaaS** | Next.js 14 · TypeScript · Prisma · OpenAI GPT-4o | [`/qpg-next`](./qpg-next) |
 
 ---
 
 ## 📋 Table of Contents
 
-- [Overview](#overview)
-- [v1 — Legacy PHP Implementation](#v1--legacy-php-implementation)
-- [v2 — QPG Next (Modern SaaS)](#v2--qpg-next-modern-saas)
-  - [Features](#features)
-  - [Tech Stack](#tech-stack)
-  - [Project Structure](#project-structure)
-  - [Getting Started](#getting-started)
-  - [Environment Variables](#environment-variables)
-  - [Database Setup](#database-setup)
-  - [Running Tests](#running-tests)
-  - [API Reference](#api-reference)
-- [Architecture](#architecture)
-- [Security](#security)
+- [Features](#-features)
+- [v1 — Legacy PHP](#v1--legacy-php-implementation)
+- [v2 — QPG Next (SaaS)](#v2--qpg-next-modern-saas)
+  - [Tech Stack](#-tech-stack)
+  - [Project Structure](#-project-structure)
+  - [Quick Start](#-quick-start)
+  - [Demo Credentials](#-demo-credentials)
+  - [Environment Variables](#-environment-variables)
+  - [Database Setup](#-database-setup)
+  - [Running Tests](#-running-tests)
+  - [API Reference](#-api-reference)
+- [Architecture](#-architecture)
+- [Security](#-security)
+- [Roadmap](#-roadmap)
+- [Author](#-author)
 
 ---
 
-## Overview
+## ✨ Features
 
-The **Question Paper Generator** automates the creation of diverse, syllabus-aligned exam papers. It handles question bank management, AI-assisted question generation, Bloom's Taxonomy mapping, and professional PDF export.
+### v2 — QPG Next (AI SaaS)
+
+| Feature | Description |
+|---------|-------------|
+| 🤖 **AI Question Generation** | Generate MCQ, Short, Long, Fill-in-the-blank, and True/False questions from any syllabus topic using GPT-4o |
+| 🧠 **Bloom's Taxonomy Mapping** | Every question tagged across 6 cognitive levels — Remember, Understand, Apply, Analyse, Evaluate, Create |
+| 📄 **Smart Paper Builder** | Drag-and-drop sections with auto-balancing for difficulty distribution and total marks |
+| 🎨 **PDF Export** | Three professional templates — University Classic, Modern Clean, Board Style |
+| ✅ **Review & Approval Workflow** | Submit papers for review; HODs/reviewers can comment, approve, or request changes |
+| 🔐 **Role-Based Access Control** | Six roles: Super Admin · Institution Admin · HOD · Teacher · Reviewer · Student |
+| 📊 **Rich Analytics** | Question usage heatmaps, Bloom's distribution charts, AI generation cost tracking |
+| 🏢 **Multi-Tenant Architecture** | Each institution has fully isolated data with configurable usage limits |
+| 🔑 **OAuth + Credentials Auth** | Sign in with Google, GitHub, or email/password via NextAuth.js v5 |
+| 🌙 **Dark / Light Theme** | Full dark mode support across all pages |
+| 🐳 **Docker Ready** | One-command local stack with PostgreSQL, Redis, and Meilisearch |
+| 🧪 **Fully Tested** | 149 unit & integration tests + Playwright e2e suite |
 
 ---
 
 ## v1 — Legacy PHP Implementation
 
-The original implementation built with PHP, MySQL, and Bootstrap. It demonstrates core question-paper generation logic and PDF export using the FPDF library.
+The original PHP implementation demonstrating core question-bank management and PDF paper generation. Built with PHP 7.4+, MySQL, FPDF, and Bootstrap 5.
 
 ### How to Run
 
-**Requirements:** PHP 7.4+, MySQL 5.7+, Apache/Nginx
+**Requirements:** PHP 7.4+, MySQL 5.7+, Apache or Nginx (e.g., XAMPP / WAMP)
 
-1. Import the database schema (create a `qb` MySQL database)
-2. Update `qpg-php/connection.php` with your MySQL credentials
-3. Serve the `qpg-php/` folder through Apache/Nginx (e.g., `http://localhost/qpg-php/`)
-4. Visit `login.php` to log in
+```bash
+# 1. Create a MySQL database
+mysql -u root -p -e "CREATE DATABASE qb;"
+
+# 2. Update credentials
+#    Edit qpg-php/connection.php → set $server, $username, $password
+
+# 3. Serve the folder via Apache/Nginx
+#    Point document root to: qpg-php/
+#    Then visit: http://localhost/login.php
+```
 
 ### Key Files
 
-| File (in `qpg-php/`) | Purpose |
+| File | Purpose |
 |------|---------|
-| `index.php` | Main application entry point and question display |
-| `login.php` | User authentication |
+| `index.php` | Main entry point — question bank display |
+| `login.php` | User authentication (bcrypt + prepared statements) |
 | `register.php` | User registration |
-| `add.php` | Add questions to the question bank |
-| `retrieve.php` | Question retrieval logic |
-| `retrieve3.php` | Filter questions by module |
-| `retrieve4.php` | Select questions for a paper |
-| `format.php` / `fdemo.php` | PDF generation using FPDF |
-| `connection.php` | Database connection |
+| `add.php` | Add questions to the bank |
+| `retrieve.php` / `retrieve3.php` / `retrieve4.php` | Question retrieval and module filtering |
+| `format.php` / `fdemo.php` | PDF generation via FPDF |
+| `connection.php` | Database connection config |
 | `database.php` | Database utility functions |
-| `about.php` | About page |
 
-### Sample Outputs
+### Sample PDFs
 
-The `qpg-php/` directory includes sample generated PDFs (`CIE 01.pdf`, `iat1.pdf`, etc.) demonstrating the output format.
+The `qpg-php/` folder includes real generated papers — `CIE 01.pdf`, `iat1.pdf` — demonstrating the PDF output format.
 
 ---
 
 ## v2 — QPG Next (Modern SaaS)
 
-A production-ready SaaS platform built with Next.js 14, Prisma ORM, OpenAI GPT-4o, and a rich component library. Located in the `/qpg-next` directory.
+A production-ready multi-tenant SaaS platform. Located in [`/qpg-next`](./qpg-next).
 
-### Features
-
-- **AI Question Generation** — Generate MCQ, Short, Long, Fill-in-the-blank, True/False questions from any syllabus topic using GPT-4o
-- **Bloom's Taxonomy Mapping** — Every question is tagged to a Bloom's level (Remember → Create)
-- **Smart Paper Builder** — Drag-and-drop questions into sections with auto-balance for difficulty and marks
-- **PDF Export** — Three professional templates: University Classic, Modern Clean, Board Style
-- **Review & Approval Workflow** — Submit papers for review; HODs/reviewers can comment, approve, or request changes
-- **Role-Based Access Control** — Six roles: Super Admin, Institution Admin, HOD, Teacher, Reviewer, Student
-- **Rich Analytics** — Track question usage, topic coverage, difficulty distribution, and AI generation costs
-- **Multi-Tenant Architecture** — Each institution has isolated data with configurable limits
-- **OAuth Authentication** — Sign in with Google, GitHub, or email/password
-- **Dark/Light Theme** — Full dark mode support
-
-### Tech Stack
+### 🛠 Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | Next.js 14 (App Router) |
-| Language | TypeScript 5 |
-| ORM | Prisma with SQLite (dev) / PostgreSQL (prod) |
-| Auth | NextAuth.js v5 |
-| AI | OpenAI GPT-4o |
-| Styling | Tailwind CSS + shadcn/ui |
-| Animations | Framer Motion |
-| State Management | Zustand |
-| Data Fetching | TanStack Query |
-| PDF Generation | Puppeteer (production) |
-| Email | Resend |
-| Search | Meilisearch |
-| Queue | BullMQ + Redis |
-| File Storage | AWS S3 / Cloudflare R2 |
-| Charts | Recharts |
-| Testing | Vitest + Testing Library + Playwright |
-| Deployment | Docker |
+| **Framework** | Next.js 14 (App Router) |
+| **Language** | TypeScript 5 |
+| **Database** | SQLite (dev) · PostgreSQL (prod) via Prisma ORM |
+| **Auth** | NextAuth.js v5 — JWT · Google · GitHub · Credentials |
+| **AI** | OpenAI GPT-4o |
+| **Styling** | Tailwind CSS · shadcn/ui |
+| **Animations** | Framer Motion |
+| **State** | Zustand |
+| **Data Fetching** | TanStack Query v5 |
+| **PDF Generation** | Puppeteer (production) |
+| **Email** | Resend |
+| **Search** | Meilisearch |
+| **Queue** | BullMQ + Redis |
+| **File Storage** | AWS S3 / Cloudflare R2 |
+| **Charts** | Recharts |
+| **Testing** | Vitest · Testing Library · Playwright |
+| **Deployment** | Docker · docker-compose |
 
-### Project Structure
+### 📁 Project Structure
 
 ```
 qpg-next/
 ├── prisma/
-│   ├── schema.prisma          # Database schema (SQLite/PostgreSQL)
-│   └── seed.ts                # Demo data seeder
+│   ├── schema.prisma          # 14 models — User, Institution, Question, Paper...
+│   ├── seed.ts                # Demo data seeder (3 users + subjects + questions)
+│   └── add-demo-user.ts       # Upsert demo user utility
 ├── public/
 │   ├── manifest.json          # PWA manifest
 │   └── sw.js                  # Service worker
@@ -125,120 +157,124 @@ qpg-next/
 │   │   ├── layout.tsx         # Root layout with providers
 │   │   ├── login/             # Login page
 │   │   ├── register/          # Registration page
-│   │   ├── not-found.tsx      # 404 page
-│   │   ├── global-error.tsx   # Global error boundary
 │   │   ├── api/
-│   │   │   ├── auth/          # NextAuth routes + registration
-│   │   │   ├── questions/     # CRUD for questions + [id] route
-│   │   │   ├── papers/        # CRUD for papers + PDF generation
-│   │   │   └── ai/            # AI question generation endpoint
+│   │   │   ├── auth/          # NextAuth routes + user registration
+│   │   │   ├── questions/     # CRUD — list, create, update, delete
+│   │   │   ├── papers/        # CRUD + PDF generation trigger
+│   │   │   └── ai/            # GPT-4o question generation endpoint
 │   │   ├── dashboard/
-│   │   │   ├── page.tsx       # Dashboard overview with stats
-│   │   │   ├── layout.tsx     # Dashboard shell (sidebar + header)
-│   │   │   ├── questions/     # Question bank browser
-│   │   │   ├── papers/        # Papers list + builder + preview
+│   │   │   ├── page.tsx       # Overview — stats cards + recent activity
+│   │   │   ├── questions/     # Question bank browser with filters
+│   │   │   ├── papers/        # Papers list · builder · preview
 │   │   │   ├── generate/      # AI generation wizard (4-step)
 │   │   │   ├── subjects/      # Subject & topic management
-│   │   │   ├── analytics/     # Charts: usage, Bloom's, AI costs
-│   │   │   ├── team/          # Team management & invitations
-│   │   │   ├── settings/      # Profile, institution, appearance
+│   │   │   ├── analytics/     # Bloom's charts, usage heatmaps, AI costs
+│   │   │   ├── team/          # Team management & role assignments
+│   │   │   ├── settings/      # Profile, institution, appearance settings
 │   │   │   └── admin/         # Super-admin panel
-│   │   └── docs/api/          # Interactive API documentation
+│   │   └── docs/api/          # Interactive API documentation page
 │   ├── components/
-│   │   ├── ui/                # shadcn/ui component library
-│   │   ├── layout/            # Header and collapsible sidebar
-│   │   └── providers/         # Auth, Query, Theme providers
+│   │   ├── ui/                # Full shadcn/ui component library (15 components)
+│   │   ├── layout/            # Collapsible sidebar + responsive header
+│   │   └── providers/         # Auth, TanStack Query, and Theme providers
 │   ├── lib/
-│   │   ├── auth.ts            # NextAuth configuration
+│   │   ├── auth.ts            # NextAuth config — providers, callbacks, RBAC
 │   │   ├── prisma.ts          # Prisma singleton client
-│   │   ├── validations.ts     # Zod schemas for all entities
-│   │   ├── permissions.ts     # RBAC permission system
-│   │   ├── utils.ts           # Shared utilities and constants
-│   │   ├── store.ts           # Zustand stores (paper builder, notifications)
-│   │   ├── pdf-templates.ts   # HTML templates for PDF generation
+│   │   ├── validations.ts     # Zod schemas for all API inputs
+│   │   ├── permissions.ts     # RBAC permission matrix (6 roles × actions)
+│   │   ├── utils.ts           # Shared helpers and constants
+│   │   ├── store.ts           # Zustand — paper builder + notification stores
+│   │   ├── pdf-templates.ts   # HTML → PDF templates (3 styles)
 │   │   ├── email.ts           # Transactional email templates (Resend)
-│   │   ├── search.ts          # Meilisearch integration
-│   │   ├── queue.ts           # BullMQ job queues
-│   │   └── s3.ts              # S3/R2 file upload utilities
-│   ├── middleware.ts           # Route protection
-│   └── __tests__/             # Unit and integration tests
+│   │   ├── search.ts          # Meilisearch full-text indexing
+│   │   ├── queue.ts           # BullMQ job definitions
+│   │   └── s3.ts              # S3/R2 pre-signed upload utilities
+│   ├── middleware.ts           # Route protection — redirects unauthenticated users
+│   └── __tests__/             # 13 test suites · 149 tests
+│       ├── api/               # Route handler tests
+│       ├── components/        # UI component tests
+│       ├── lib/               # Unit tests for all lib modules
+│       └── middleware.test.ts
 ├── e2e/                       # Playwright end-to-end tests
-├── docker-compose.yml         # Local dev stack (DB, Redis, Meilisearch)
-├── Dockerfile                 # Production container
+├── docker-compose.yml         # Local stack — PostgreSQL, Redis, Meilisearch
+├── Dockerfile                 # Production multi-stage build
 └── next.config.js             # Next.js configuration
 ```
 
-### Getting Started
+---
 
-#### Prerequisites
+### 🚀 Quick Start
 
-- Node.js 18+
-- npm / pnpm
-- (Optional for full features) Docker, Redis, PostgreSQL, Meilisearch
-
-#### Quick Start (SQLite — no Docker needed)
+#### Option A — SQLite (No Docker, fastest)
 
 ```bash
-# 1. Navigate to the Next.js app
-cd qpg-next
+# Clone and navigate
+git clone https://github.com/Yashas14/Question_Paper_Generator.git
+cd Question_Paper_Generator/qpg-next
 
-# 2. Install dependencies
+# Install dependencies
 npm install
 
-# 3. Copy environment file
+# Set up environment
 cp .env.example .env
-# Edit .env and set NEXTAUTH_SECRET and OPENAI_API_KEY at minimum
+# Minimum required: set NEXTAUTH_SECRET to any random string
 
-# 4. Push the database schema
-npm run db:push
+# Set up database
+npm run db:push      # Creates dev.db with all tables
+npm run db:seed      # Seeds demo institution, users, and questions
 
-# 5. Seed demo data
-npm run db:seed
-
-# 6. Start the development server
+# Start dev server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open **http://localhost:3000**
 
-**Demo credentials (after seeding):**
-- Email: `demo@qpg.app`
-- Password: `Demo@1234`
-
-#### Full Stack with Docker
+#### Option B — Full Stack with Docker
 
 ```bash
 cd qpg-next
-docker-compose up -d          # Start PostgreSQL, Redis, Meilisearch
-cp .env.example .env          # Configure .env for Docker services
+cp .env.example .env          # Configure for Docker (see .env.example)
+docker-compose up -d          # Starts PostgreSQL, Redis, Meilisearch
 npm install
 npm run db:migrate            # Run Prisma migrations
 npm run db:seed               # Seed demo data
 npm run dev
 ```
 
-### Environment Variables
+---
+
+### 🔑 Demo Credentials
+
+After running `npm run db:seed`, log in at **http://localhost:3000/login** with:
+
+| Role | Email | Password | Access |
+|------|-------|----------|--------|
+| **Institution Admin** | `admin@demo.edu` | `admin123` | Full access — manage users, settings, all papers |
+| **Teacher** | `teacher@demo.edu` | `teacher123` | Create/edit questions & papers, run AI generation |
+| **Demo User** | `demo@gmail.com` | `demo@123` | Same as Teacher — quick demo access |
+
+> **Note:** Google and GitHub OAuth require client credentials in `.env`. Credentials login works out-of-the-box with just the SQLite setup.
+
+---
+
+### ⚙️ Environment Variables
 
 | Variable | Required | Description |
-|----------|----------|-------------|
-| `DATABASE_URL` | ✅ | SQLite (`file:./dev.db`) or PostgreSQL connection string |
-| `NEXTAUTH_URL` | ✅ | App base URL (e.g. `http://localhost:3000`) |
-| `NEXTAUTH_SECRET` | ✅ | Random secret — generate with `openssl rand -base64 32` |
-| `OPENAI_API_KEY` | For AI features | GPT-4o API key |
+|----------|:--------:|-------------|
+| `DATABASE_URL` | ✅ | `file:./dev.db` for SQLite · PostgreSQL URL for prod |
+| `NEXTAUTH_URL` | ✅ | App base URL — `http://localhost:3000` |
+| `NEXTAUTH_SECRET` | ✅ | Random string — generate: `openssl rand -base64 32` |
+| `OPENAI_API_KEY` | AI features | GPT-4o API key from platform.openai.com |
 | `OPENAI_MODEL` | No | Model name (default: `gpt-4o`) |
-| `GOOGLE_CLIENT_ID` | For Google OAuth | Google OAuth app credentials |
-| `GOOGLE_CLIENT_SECRET` | For Google OAuth | |
-| `GITHUB_CLIENT_ID` | For GitHub OAuth | GitHub OAuth app credentials |
-| `GITHUB_CLIENT_SECRET` | For GitHub OAuth | |
-| `REDIS_URL` | For queues | Redis connection URL |
-| `RESEND_API_KEY` | For emails | Resend API key |
-| `AWS_ACCESS_KEY_ID` | For file uploads | AWS / Cloudflare R2 credentials |
-| `AWS_SECRET_ACCESS_KEY` | For file uploads | |
-| `AWS_S3_BUCKET` | For file uploads | S3 bucket name |
-| `MEILISEARCH_HOST` | For full-text search | Meilisearch server URL |
-| `MEILISEARCH_API_KEY` | For full-text search | Meilisearch master key |
+| `GOOGLE_CLIENT_ID` / `SECRET` | Google OAuth | Google Cloud Console credentials |
+| `GITHUB_CLIENT_ID` / `SECRET` | GitHub OAuth | GitHub OAuth App credentials |
+| `REDIS_URL` | Queues | Redis connection (default: `redis://localhost:6379`) |
+| `RESEND_API_KEY` | Emails | Resend API key |
+| `AWS_ACCESS_KEY_ID` / `SECRET` | File uploads | AWS S3 or Cloudflare R2 credentials |
+| `AWS_S3_BUCKET` | File uploads | Bucket name |
+| `MEILISEARCH_HOST` / `API_KEY` | Full-text search | Meilisearch server URL + master key |
 
-### Database Setup
+### 🗄️ Database Setup
 
 The schema uses **SQLite** by default for development and **PostgreSQL** for production.
 
@@ -259,9 +295,9 @@ npm run db:migrate:deploy
 npm run db:studio
 ```
 
-**Key models:** `User`, `Institution`, `Department`, `Subject`, `Topic`, `Question`, `QuestionPaper`, `PaperSection`, `PaperQuestion`, `AIGenerationLog`, `AnalyticsEvent`, `Notification`, `ApiKey`
+**Key models:** `User` · `Institution` · `Department` · `Subject` · `Topic` · `Question` · `QuestionPaper` · `PaperSection` · `PaperQuestion` · `AIGenerationLog` · `AnalyticsEvent` · `Notification` · `ApiKey`
 
-### Running Tests
+### 🧪 Running Tests
 
 ```bash
 cd qpg-next
@@ -282,102 +318,146 @@ npm run typecheck
 npm run lint
 ```
 
-**Test coverage:** 13 test suites, 149 tests across:
-- Utility functions (`utils.ts`, `store.ts`)
-- Validation schemas (`validations.ts`)
-- Permission system (`permissions.ts`)
-- API routes (`/api/questions`, `/api/papers`, `/api/auth/register`)
-- Middleware (route protection)
-- UI components (`Button`, `Input`)
+**Test Coverage — 13 suites · 149 tests · all passing ✅**
 
-### API Reference
+| Suite | File | Tests |
+|-------|------|------:|
+| Utility functions | `utils.test.ts` + `utils-extended.test.ts` | 28 |
+| Validation schemas | `validations.test.ts` + `validations-extended.test.ts` | 30 |
+| Permission system | `permissions.test.ts` + `permissions-extended.test.ts` | 24 |
+| Zustand store | `store.test.ts` | 14 |
+| API — Questions | `api/questions.test.ts` | 12 |
+| API — Papers | `api/papers.test.ts` | 10 |
+| API — Register | `api/register.test.ts` | 10 |
+| Middleware | `middleware.test.ts` | 11 |
+| UI components | `button.test.tsx` + `input.test.tsx` | 10 |
 
-A full interactive API reference is available at `/docs/api` when the app is running.
+### 📡 API Reference
+
+Interactive docs available at **http://localhost:3000/docs/api** when running.
 
 #### Quick Reference
 
 | Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
+|--------|----------|:----:|-------------|
 | `POST` | `/api/auth/register` | ❌ | Register a new user + institution |
-| `GET` | `/api/questions` | ✅ | List questions (paginated, filterable) |
+| `GET` | `/api/questions` | ✅ | List questions — paginated, filterable |
 | `POST` | `/api/questions` | ✅ | Create a question |
 | `GET` | `/api/questions/[id]` | ✅ | Get a single question |
 | `PUT` | `/api/questions/[id]` | ✅ | Update a question |
 | `DELETE` | `/api/questions/[id]` | ✅ | Delete a question |
 | `GET` | `/api/papers` | ✅ | List papers (role-filtered) |
 | `POST` | `/api/papers` | ✅ | Create a paper |
-| `POST` | `/api/papers/[id]/generate-pdf` | ✅ | Generate PDF for a paper |
+| `POST` | `/api/papers/[id]/generate-pdf` | ✅ | Trigger PDF generation |
 | `POST` | `/api/ai/generate-questions` | ✅ | AI-generate questions via GPT-4o |
 
-**Authentication:** All protected endpoints require a valid session cookie (set via NextAuth).
+**Auth:** All `✅` routes require a valid NextAuth session cookie.
 
-Query parameters for `/api/questions`:
-
+**Query params for `GET /api/questions`:**
 ```
 page, limit, search, subjectId, topicId, type, difficulty, bloomLevel, isAIGenerated
 ```
 
 ---
 
-## Architecture
+## 🏛 Architecture
 
 ```
-┌─────────────────────────────────────────┐
-│             Next.js App (Edge/Node)      │
-│  ┌─────────┐  ┌──────────┐  ┌────────┐ │
-│  │  Pages  │  │API Routes│  │Middleware│ │
-│  └─────────┘  └──────────┘  └────────┘ │
-└─────────────────────────────────────────┘
-         │              │
-    ┌────▼───┐     ┌────▼────────┐
-    │Prisma  │     │ NextAuth.js │
-    │  ORM   │     │  Sessions  │
-    └────┬───┘     └────────────┘
-         │
-    ┌────▼──────┐    ┌──────────┐    ┌──────────┐
-    │ SQLite/   │    │  OpenAI  │    │  Redis / │
-    │PostgreSQL │    │  GPT-4o  │    │  BullMQ  │
-    └───────────┘    └──────────┘    └──────────┘
+┌──────────────────────────────────────────────────────────┐
+│                    Browser / Client                       │
+│         Next.js App Router + TanStack Query              │
+│         Zustand (paper builder) + Framer Motion          │
+└────────────────────────┬─────────────────────────────────┘
+                         │ HTTPS
+┌────────────────────────▼─────────────────────────────────┐
+│                  Next.js Server (Node)                    │
+│  ┌──────────────┐  ┌──────────────┐  ┌────────────────┐ │
+│  │  App Router  │  │  API Routes  │  │   Middleware   │ │
+│  │  (RSC + SSR) │  │  (REST)      │  │  (Auth guard)  │ │
+│  └──────────────┘  └──────┬───────┘  └────────────────┘ │
+└─────────────────────────── │ ────────────────────────────┘
+              ┌──────────────┼───────────────┐
+              │              │               │
+   ┌──────────▼──┐  ┌────────▼──────┐  ┌────▼──────────┐
+   │  Prisma ORM │  │  NextAuth.js  │  │  OpenAI API   │
+   │  SQLite/PG  │  │  JWT Sessions │  │  GPT-4o       │
+   └─────────────┘  └───────────────┘  └───────────────┘
+              │
+   ┌──────────┴──────────────────────────┐
+   │  Supporting Services (optional)     │
+   │  Redis · BullMQ · Meilisearch · S3  │
+   └─────────────────────────────────────┘
 ```
 
-**Data Flow for AI Generation:**
-1. User selects subject, topics, question types, and Bloom's levels
-2. POST to `/api/ai/generate-questions`
-3. Usage limit checked against `Institution.maxAIGenerations`
-4. Prompt built and sent to OpenAI GPT-4o with JSON response format
-5. Questions parsed, saved to `Question` table, and returned to client
-6. Generation logged in `AIGenerationLog` for cost tracking
+**AI Question Generation Flow:**
+```
+User selects topic + types + Bloom's levels
+        ↓
+POST /api/ai/generate-questions
+        ↓
+Check institution.maxAIGenerations limit
+        ↓
+Build structured prompt → GPT-4o (JSON mode)
+        ↓
+Parse + validate response → save to Question table
+        ↓
+Log in AIGenerationLog (cost tracking)
+        ↓
+Return questions to client
+```
 
 ---
 
-## Security
+## 🔒 Security
 
-Both implementations address OWASP Top 10 concerns:
+Both implementations address **OWASP Top 10** concerns:
 
-**PHP (v1):**
-- SQL injection mitigated via `mysqli_real_escape_string()` and table name whitelisting
-- Passwords hashed with `password_hash()` (bcrypt) and verified with `password_verify()`
+**PHP v1:**
+- ✅ SQL injection prevented via `mysqli_real_escape_string()` + prepared statements
+- ✅ Subject inputs validated against an explicit allowlist
+- ✅ Passwords hashed with `password_hash()` (bcrypt) + `password_verify()`
+- ✅ No raw user input in dynamic queries
 
-**Next.js (v2):**
-- All inputs validated with Zod schemas before hitting the database
-- Authentication via NextAuth.js JWT sessions (no raw password comparison in session)
-- Passwords hashed with bcrypt (12 rounds) on registration
-- Role-based access control enforced at API route level
-- Prisma ORM prevents SQL injection via parameterized queries
-- No secrets in client-side code; all API keys in server-only environment variables
-
----
-
-## 🔮 Future Enhancements
-
-- Puppeteer-based server-side PDF rendering (stub already in `generate-pdf` route)
-- LaTeX/KaTeX support for mathematical equations
-- Bulk CSV/Excel import for question bank
-- Mobile app via React Native
-- Webhook integrations for LMS platforms
+**Next.js v2:**
+- ✅ All API inputs validated with **Zod schemas** before touching the database
+- ✅ **Prisma ORM** parameterized queries — no raw SQL with user input
+- ✅ Passwords hashed with **bcrypt (12 rounds)** at registration
+- ✅ **NextAuth.js JWT sessions** — no raw password in session tokens
+- ✅ RBAC enforced at API route level — roles checked server-side
+- ✅ All secrets in server-only environment variables — none in client bundles
+- ✅ Database file (`dev.db`) excluded from version control via `.gitignore`
 
 ---
 
-👥 **Connect:**  
-Yashas D on [LinkedIn](https://www.linkedin.com/in/yashasd2004/)
+## 🔮 Roadmap
+
+- [ ] Puppeteer-based server-side PDF rendering (stub in `generate-pdf` route)
+- [ ] LaTeX / KaTeX support for mathematical equations
+- [ ] Bulk import via CSV / Excel for question banks
+- [ ] Mobile app via React Native
+- [ ] Webhook integrations for LMS platforms (Moodle, Canvas)
+- [ ] AI-powered question quality scoring
+
+---
+
+## 👤 Author
+
+**Yashas D**
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Yashas%20D-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/yashasd2004/)
+[![GitHub](https://img.shields.io/badge/GitHub-Yashas14-181717?logo=github&logoColor=white)](https://github.com/Yashas14)
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**.
+
+---
+
+<div align="center">
+
+⭐ **If you found this useful, please star the repository!** ⭐
+
+</div>
 
